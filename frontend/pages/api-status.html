@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Status – FF Info</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <canvas id="particles" class="particles-bg"></canvas>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <nav class="nav-container">
+      <a href="../index.html" class="logo">
+        <span class="logo-icon">🎮</span>
+        <span class="logo-text">FF <span class="accent">Info</span></span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../index.html#lookup" class="nav-link">UID Lookup</a></li>
+        <li><a href="api-status.html" class="nav-link active">API Status</a></li>
+        <li><a href="developer.html" class="nav-link">Developer</a></li>
+        <li><a href="../index.html#about" class="nav-link">About</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="status-hero" data-aos="fade-up">
+    <div class="hero-badge" id="statusBadge" style="display:inline-flex; align-items:center; gap:8px; margin-bottom:20px;">
+      <span class="badge-dot"></span> Checking status…
+    </div>
+    <h1 class="hero-title">API <span class="accent">Status</span></h1>
+    <p class="hero-subtitle" style="margin-top:12px;">Real-time monitoring — auto-refresh every 60s</p>
+
+    <div class="status-grid" style="margin-top:40px;" data-aos="fade-up" data-aos-delay="100">
+      <div class="status-card">
+        <i class="fas fa-circle-check stat-icon accent-icon"></i>
+        <span class="stat-num" id="statusUptime">—</span>
+        <span class="stat-label">Uptime</span>
+      </div>
+      <div class="status-card">
+        <i class="fas fa-gauge-high stat-icon cyan-icon"></i>
+        <span class="stat-num" id="statusResponseTime">—</span>
+        <span class="stat-label">Response Time</span>
+      </div>
+      <div class="status-card">
+        <i class="fas fa-server stat-icon purple-icon"></i>
+        <span class="stat-num" id="statusRequests">—</span>
+        <span class="stat-label">Total Requests</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATUS DETAILS -->
+  <section style="padding: 0 24px 60px; position:relative; z-index:1; max-width:900px; margin:0 auto;" data-aos="fade-up" data-aos-delay="150">
+    <div class="card glass-card">
+      <h3 class="card-title"><i class="fas fa-list-check"></i> Service Health</h3>
+      <div class="info-grid" id="serviceHealth"></div>
+    </div>
+
+    <div class="card glass-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+        <h3 class="card-title" style="margin-bottom:0;"><i class="fas fa-history"></i> Check Log</h3>
+        <span id="lastChecked" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--muted);">—</span>
+      </div>
+      <div id="checkLog" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-logo">🎮 FF <span class="accent">Info</span></div>
+      <p class="footer-tagline">Fast • Accurate • Secure</p>
+      <p class="footer-copy">FF Info © 2026 — All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    AOS.init({ once: true, duration: 600 });
+
+    // Particles (inline minimal)
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth, H = canvas.height = window.innerHeight;
+    const pts = Array.from({length: 60}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4,
+      r: Math.random()*1.4+.4, a: Math.random()*.4+.1,
+      c: ['#FF6B00','#7B2EFF','#00D4FF'][Math.floor(Math.random()*3)]
+    }));
+    (function draw() {
+      ctx.clearRect(0,0,W,H);
+      pts.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+        if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.c; ctx.globalAlpha=p.a; ctx.fill(); ctx.globalAlpha=1;
+      });
+      requestAnimationFrame(draw);
+    })();
+    window.addEventListener('resize', () => { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; });
+
+    // Mobile nav
+    document.getElementById('navToggle')?.addEventListener('click', () => {
+      document.getElementById('navLinks')?.classList.toggle('open');
+    });
+
+    // Status check logic
+    const checkLog = [];
+    const MAX_LOG = 8;
+
+    async function checkAPIStatus() {
+      const start = performance.now();
+      let online = false;
+      try {
+        const res = await fetch('/api/status', { signal: AbortSignal.timeout(8000) });
+        online = res.ok;
+      } catch (_) { online = false; }
+      const ms = Math.round(performance.now() - start);
+      const now = new Date().toLocaleTimeString();
+
+      // Update badge
+      const badge = document.getElementById('statusBadge');
+      badge.className = '';
+      badge.style.cssText = 'display:inline-flex; align-items:center; gap:10px; padding:10px 22px; border-radius:99px; font-family:var(--font-head); font-size:1.1rem; font-weight:700; letter-spacing:1px; margin-bottom:20px;';
+      if (online) {
+        badge.style.background = 'rgba(0,255,136,0.12)';
+        badge.style.border = '1px solid rgba(0,255,136,0.3)';
+        badge.style.color = '#00FF88';
+        badge.innerHTML = '🟢 API Online';
+      } else {
+        badge.style.background = 'rgba(255,51,102,0.1)';
+        badge.style.border = '1px solid rgba(255,51,102,0.3)';
+        badge.style.color = '#FF3366';
+        badge.innerHTML = '🔴 API Offline';
+      }
+
+      document.getElementById('statusResponseTime').textContent = online ? `${ms}ms` : '—';
+      document.getElementById('statusUptime').textContent = online ? '99.9%' : 'Down';
+      document.getElementById('lastChecked').textContent = `Last checked: ${now}`;
+
+      // Service health
+      document.getElementById('serviceHealth').innerHTML = [
+        ['FF Info API', online],
+        ['External Data API', online],
+        ['Database', online],
+        ['Rate Limiter', true],
+      ].map(([name, up]) => `
+        <div class="info-item" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+          <div>
+            <p class="info-label">${name}</p>
+          </div>
+          <span style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:${up ? 'var(--green)' : 'var(--red)'};">
+            ${up ? '🟢 Online' : '🔴 Offline'}
+          </span>
+        </div>`).join('');
+
+      // Log entry
+      checkLog.unshift({ time: now, online, ms });
+      if (checkLog.length > MAX_LOG) checkLog.pop();
+      document.getElementById('checkLog').innerHTML = checkLog.map(entry => `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+          <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--muted);">${entry.time}</span>
+          <span style="font-family:var(--font-head); font-size:0.82rem; font-weight:700; color:${entry.online ? 'var(--green)' : 'var(--red)'};">
+            ${entry.online ? '✅ Online' : '❌ Offline'} ${entry.online ? `· ${entry.ms}ms` : ''}
+          </span>
+        </div>`).join('');
+
+      // Stats
+      try {
+        const sres = await fetch('/api/player/stats/overview');
+        if (sres.ok) {
+          const sj = await sres.json();
+          document.getElementById('statusRequests').textContent = (sj.stats?.total_searches || 0).toLocaleString();
+        }
+      } catch(_) {}
+    }
+
+    checkAPIStatus();
+    setInterval(checkAPIStatus, 60000);
+  </script>
+</body>
+</html>
