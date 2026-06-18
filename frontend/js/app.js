@@ -2,8 +2,8 @@
    FF Info - app.js
    ============================================ */
 
-const API_BASE = 'https://YOUR-BACKEND-URL.onrender.com/api/player';
-const STATS_URL = 'https://YOUR-BACKEND-URL.onrender.com/api/player/stats/overview';
+const API_BASE = 'https://ff-info-web-rhpw.onrender.com/api/player';
+const STATS_URL = 'https://ff-info-web-rhpw.onrender.com/api/player/stats/overview';
 const EXAMPLE_UIDS = ['2296094466', '1234567890', '9876543210'];
 const HISTORY_KEY = 'ffinfo_history';
 
