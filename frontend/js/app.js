@@ -2,7 +2,8 @@
    FF Info - app.js
    ============================================ */
 
-const API_BASE = '/api/player';
+const API_BASE = 'https://YOUR-BACKEND-URL.onrender.com/api/player';
+const STATS_URL = 'https://YOUR-BACKEND-URL.onrender.com/api/player/stats/overview';
 const EXAMPLE_UIDS = ['2296094466', '1234567890', '9876543210'];
 const HISTORY_KEY = 'ffinfo_history';
 
@@ -317,7 +318,7 @@ function deleteHistoryItem(uid) {
 // ---- Stats fetch ----
 async function fetchStats() {
   try {
-    const res = await fetch('/api/player/stats/overview');
+    const res = await fetch(STATS_URL);
     if (!res.ok) return;
     const json = await res.json();
     const s = json.stats || {};
