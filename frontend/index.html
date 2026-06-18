@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FF Info – Free Fire Account Lookup</title>
+  <meta name="description" content="Search any Free Fire account and view detailed information instantly." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- AOS Animation -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <!-- html2canvas + jsPDF for download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Particle Canvas -->
+  <canvas id="particles" class="particles-bg"></canvas>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header" id="top">
+    <nav class="nav-container">
+      <a href="#top" class="logo">
+        <span class="logo-icon">🎮</span>
+        <span class="logo-text">FF <span class="accent">Info</span></span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#top" class="nav-link active">Home</a></li>
+        <li><a href="#lookup" class="nav-link">UID Lookup</a></li>
+        <li><a href="pages/api-status.html" class="nav-link">API Status</a></li>
+        <li><a href="pages/developer.html" class="nav-link">Developer</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="lookup">
+    <div class="hero-content" data-aos="fade-up">
+      <div class="hero-badge">
+        <span class="badge-dot"></span> Live API Connected
+      </div>
+      <h1 class="hero-title">
+        <span class="accent">FF</span> Info
+      </h1>
+      <p class="hero-subtitle">Free Fire Account Information Checker</p>
+      <p class="hero-desc">Search any Free Fire account and view detailed information instantly.</p>
+
+      <div class="search-box">
+        <div class="input-wrap">
+          <i class="fas fa-search input-icon"></i>
+          <input
+            type="text"
+            id="uidInput"
+            class="uid-input"
+            placeholder="Enter Free Fire UID (8–12 digits)"
+            maxlength="12"
+            autocomplete="off"
+            inputmode="numeric"
+          />
+          <button class="clear-btn" id="clearBtn" title="Clear">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="search-actions">
+          <button class="btn btn-primary" id="searchBtn">
+            <i class="fas fa-radar"></i> Search
+          </button>
+          <button class="btn btn-ghost" id="exampleBtn">
+            <i class="fas fa-dice"></i> Example UID
+          </button>
+        </div>
+        <p class="input-hint" id="inputHint"></p>
+      </div>
+    </div>
+
+    <div class="hero-glow"></div>
+  </section>
+
+  <!-- ===== LOADING ===== -->
+  <div class="loading-overlay" id="loadingOverlay" hidden>
+    <div class="loader-box">
+      <div class="loader-ring"></div>
+      <p class="loader-text">Fetching player data...</p>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <section class="results-section" id="resultsSection" hidden>
+    <div class="results-container">
+
+      <!-- Action bar -->
+      <div class="result-actions">
+        <h2 class="section-title">Player Profile</h2>
+        <div class="action-btns">
+          <button class="icon-btn" id="copyUidBtn" title="Copy UID">
+            <i class="fas fa-copy"></i> Copy UID
+          </button>
+          <button class="icon-btn" id="downloadPngBtn" title="Download PNG">
+            <i class="fas fa-image"></i> PNG
+          </button>
+          <button class="icon-btn" id="downloadPdfBtn" title="Download PDF">
+            <i class="fas fa-file-pdf"></i> PDF
+          </button>
+          <button class="icon-btn" id="shareBtn" title="Share">
+            <i class="fas fa-share-alt"></i> Share
+          </button>
+        </div>
+      </div>
+
+      <!-- Snapshot target -->
+      <div id="resultSnapshot">
+
+        <!-- Basic Info Card -->
+        <div class="card glass-card" data-aos="fade-up" id="basicCard">
+          <div class="card-header">
+            <div class="player-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="player-head">
+              <h2 class="player-name" id="rNickname">—</h2>
+              <span class="player-uid" id="rUid">UID: —</span>
+            </div>
+            <div class="player-badges">
+              <span class="badge" id="rRegion">—</span>
+              <span class="badge badge-gold" id="rLevel">LVL —</span>
+            </div>
+          </div>
+
+          <div class="info-grid" id="basicGrid"></div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="cards-row" data-aos="fade-up" data-aos-delay="50">
+          <div class="card glass-card mini-card">
+            <i class="fas fa-heart mini-icon accent-icon"></i>
+            <p class="mini-label">Likes</p>
+            <p class="mini-value" id="rLikes">—</p>
+          </div>
+          <div class="card glass-card mini-card">
+            <i class="fas fa-star mini-icon gold-icon"></i>
+            <p class="mini-label">Rank</p>
+            <p class="mini-value" id="rRank">—</p>
+          </div>
+          <div class="card glass-card mini-card">
+            <i class="fas fa-trophy mini-icon purple-icon"></i>
+            <p class="mini-label">CS Rank</p>
+            <p class="mini-value" id="rCsRank">—</p>
+          </div>
+          <div class="card glass-card mini-card">
+            <i class="fas fa-gem mini-icon cyan-icon"></i>
+            <p class="mini-label">Diamonds</p>
+            <p class="mini-value" id="rDiamonds">—</p>
+          </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="card glass-card" data-aos="fade-up" data-aos-delay="100" id="profileCard">
+          <h3 class="card-title"><i class="fas fa-tshirt"></i> Profile & Equipment</h3>
+          <div class="info-grid" id="profileGrid"></div>
+          <div class="tag-row" id="clothesTags"></div>
+          <div class="tag-row" id="skillsTags"></div>
+        </div>
+
+        <!-- Guild + Pet Row -->
+        <div class="cards-row two-col" data-aos="fade-up" data-aos-delay="150">
+          <div class="card glass-card" id="guildCard">
+            <h3 class="card-title"><i class="fas fa-shield-alt"></i> Guild</h3>
+            <div id="guildContent"></div>
+          </div>
+          <div class="card glass-card" id="petCard">
+            <h3 class="card-title"><i class="fas fa-paw"></i> Pet</h3>
+            <div class="info-grid" id="petGrid"></div>
+          </div>
+        </div>
+
+        <!-- Social Info -->
+        <div class="card glass-card" data-aos="fade-up" data-aos-delay="200" id="socialCard">
+          <h3 class="card-title"><i class="fas fa-comment-dots"></i> Social</h3>
+          <blockquote class="signature-quote" id="rSignature">—</blockquote>
+          <div class="info-grid" id="socialGrid"></div>
+        </div>
+
+        <!-- Prime + External Icon -->
+        <div class="cards-row two-col" data-aos="fade-up" data-aos-delay="250">
+          <div class="card glass-card">
+            <h3 class="card-title"><i class="fas fa-crown"></i> Prime Status</h3>
+            <p class="prime-status" id="rPrime">—</p>
+          </div>
+          <div class="card glass-card">
+            <h3 class="card-title"><i class="fas fa-id-badge"></i> External Icon</h3>
+            <div class="info-grid" id="iconGrid"></div>
+          </div>
+        </div>
+
+      </div><!-- /resultSnapshot -->
+    </div>
+  </section>
+
+  <!-- ===== STATS COUNTERS ===== -->
+  <section class="stats-section" id="statsSection" data-aos="fade-up">
+    <div class="section-container">
+      <h2 class="section-title center">Platform Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <i class="fas fa-search stat-icon"></i>
+          <span class="stat-num" data-target="0" id="statTotal">0</span>
+          <span class="stat-label">Total Searches</span>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-check-circle stat-icon accent-icon"></i>
+          <span class="stat-num" data-target="0" id="statSuccess">0</span>
+          <span class="stat-label">Successful Searches</span>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users stat-icon purple-icon"></i>
+          <span class="stat-num" id="statOnline">1</span>
+          <span class="stat-label">Online Users</span>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-server stat-icon cyan-icon"></i>
+          <span class="stat-num" data-target="0" id="statRequests">0</span>
+          <span class="stat-label">API Requests</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ANALYTICS CHARTS ===== -->
+  <section class="analytics-section" data-aos="fade-up">
+    <div class="section-container">
+      <h2 class="section-title center">Analytics</h2>
+      <div class="charts-grid">
+        <div class="card glass-card chart-card">
+          <h3 class="card-title">Daily Searches</h3>
+          <canvas id="dailyChart"></canvas>
+        </div>
+        <div class="card glass-card chart-card">
+          <h3 class="card-title">Weekly Traffic</h3>
+          <canvas id="weeklyChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SEARCH HISTORY ===== -->
+  <section class="history-section" data-aos="fade-up" id="historySection">
+    <div class="section-container">
+      <div class="history-header">
+        <h2 class="section-title">Recent Searches</h2>
+        <button class="btn btn-ghost sm" id="clearHistoryBtn">
+          <i class="fas fa-trash"></i> Clear All
+        </button>
+      </div>
+      <div class="history-list" id="historyList">
+        <p class="empty-state"><i class="fas fa-clock"></i> No recent searches.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="about-section" id="about" data-aos="fade-up">
+    <div class="section-container center">
+      <h2 class="section-title">About FF Info</h2>
+      <p class="about-text">
+        FF Info was built to provide fast, accurate, and reliable Free Fire account information through a modern gaming experience.
+      </p>
+      <div class="about-badges">
+        <span class="badge badge-outline"><i class="fas fa-bolt"></i> Fast</span>
+        <span class="badge badge-outline"><i class="fas fa-bullseye"></i> Accurate</span>
+        <span class="badge badge-outline"><i class="fas fa-lock"></i> Secure</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-logo">🎮 FF <span class="accent">Info</span></div>
+      <p class="footer-tagline">Fast • Accurate • Secure</p>
+      <p class="footer-dev">
+        Developed by <a href="pages/developer.html" class="accent">Shuvo Ahmed</a>
+        &nbsp;·&nbsp; Telegram: <a href="https://t.me/shuvo_9882" target="_blank" class="accent">@shuvo_9882</a>
+      </p>
+      <p class="footer-powered">Powered by FF Info API</p>
+      <p class="footer-copy">FF Info © 2026 — All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- AOS + App JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
