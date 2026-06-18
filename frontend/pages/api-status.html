@@ -119,6 +119,7 @@
     });
 
     // Status check logic
+    const BACKEND = 'https://YOUR-BACKEND-URL.onrender.com';
     const checkLog = [];
     const MAX_LOG = 8;
 
@@ -126,7 +127,7 @@
       const start = performance.now();
       let online = false;
       try {
-        const res = await fetch('/api/status', { signal: AbortSignal.timeout(8000) });
+        const res = await fetch(`${BACKEND}/api/status`, { signal: AbortSignal.timeout(8000) });
         online = res.ok;
       } catch (_) { online = false; }
       const ms = Math.round(performance.now() - start);
@@ -181,7 +182,7 @@
 
       // Stats
       try {
-        const sres = await fetch('/api/player/stats/overview');
+        const sres = await fetch(`${BACKEND}/api/player/stats/overview`);
         if (sres.ok) {
           const sj = await sres.json();
           document.getElementById('statusRequests').textContent = (sj.stats?.total_searches || 0).toLocaleString();
