@@ -175,10 +175,12 @@
         </div>`).join('');
     }
 
+    const BACKEND = 'https://YOUR-BACKEND-URL.onrender.com';
+
     async function loadDevStats() {
       let total = 0, success = 0, failed = 0, today = 0;
       try {
-        const res = await fetch('/api/player/stats/overview');
+        const res = await fetch(`${BACKEND}/api/player/stats/overview`);
         if (res.ok) {
           const j = await res.json();
           const s = j.stats || {};
