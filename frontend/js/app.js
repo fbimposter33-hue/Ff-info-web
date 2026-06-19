@@ -146,24 +146,30 @@ function renderResults(data) {
   buildGrid('basicGrid', [
     ['EXP', fmt(b.exp)],
     ['Ranking Points', fmt(b.ranking_points)],
+    ['CS Ranking Points', fmt(b.cs_ranking_points)],
     ['Max Rank', b.max_rank || '—'],
     ['Max CS Rank', b.max_cs_rank || '—'],
     ['Season ID', b.season_id || '—'],
     ['Badge ID', b.badge_id || '—'],
+    ['Badge Count', b.badge_count || '—'],
     ['Account Type', b.account_type || '—'],
-    ['Created', b.created_at || '—'],
+    ['Release Version', b.release_version || '—'],
     ['Last Login', b.last_login || '—'],
+    ['Hide Info', b.hide_info ? 'Yes' : 'No'],
   ]);
 
   // Profile
   buildGrid('profileGrid', [
     ['Avatar ID', p.avatar_id || '—'],
     ['Skin Color', p.skin_color || '—'],
-    ['Character', p.character_selected || '—'],
-    ['Awakening', p.awakening_status != null ? p.awakening_status : '—'],
+    ['Selected', p.is_selected ? '✅ Yes' : '❌ No'],
+    ['Awakened', p.is_awaken ? '✅ Yes' : '❌ No'],
   ]);
   buildTags('clothesTags', p.equipped_clothes || [], '👕', false);
   buildTags('skillsTags', p.equipped_skills || [], '⚡', true);
+
+  const cap = data.captain_info || {};
+  const cr  = data.credit_info || {};
 
   // Guild
   const gc = document.getElementById('guildContent');
@@ -177,7 +183,10 @@ function renderResults(data) {
         ['Guild Name', c.name],
         ['Guild ID', c.id || '—'],
         ['Level', c.level || '—'],
-        ['Members', c.members || '—'],
+        ['Members', `${c.members || '—'} / ${c.capacity || '—'}`],
+        ['Captain', cap.nickname || '—'],
+        ['Captain Level', cap.level || '—'],
+        ['Captain Rank', cap.rank || '—'],
       ], grid);
     } else {
       gc.innerHTML = '<p class="no-data">No Guild Information Available</p>';
@@ -191,34 +200,37 @@ function renderResults(data) {
     ['EXP', fmt(pet.exp)],
     ['Skin ID', pet.skin_id || '—'],
     ['Skill ID', pet.skill_id || '—'],
-    ['Selected', pet.selected ? 'Yes' : 'No'],
+    ['Selected', pet.selected ? '✅ Yes' : '❌ No'],
   ]);
 
   // Social
   const sig = document.getElementById('rSignature');
   if (sig) sig.textContent = s.signature || 'No signature set.';
   buildGrid('socialGrid', [
-    ['Language', s.language || '—'],
-    ['Rank Show Mode', s.rank_show_mode || '—'],
+    ['Language', s.language?.replace('Language_', '') || '—'],
+    ['Gender', s.gender?.replace('Gender_', '') || '—'],
+    ['Rank Show', s.rank_show_mode?.replace('RankShow_', '') || '—'],
+  ]);
+
+  // Credit score
+  buildGrid('iconGrid', [
+    ['Credit Score', cr.credit_score || '—'],
+    ['Reward State', cr.reward_state?.replace('REWARD_STATE_', '') || '—'],
+    ['Icon Status', ei.status?.replace('ExternalIconStatus_', '') || '—'],
+    ['Icon Show Type', ei.show_type?.replace('ExternalIconShowType_', '') || '—'],
   ]);
 
   // Prime
   const primeEl = document.getElementById('rPrime');
   if (primeEl) {
-    if (pr.status != null) {
-      primeEl.textContent = pr.status === 1 ? '👑 Active' : '❌ Inactive';
-      primeEl.style.color = pr.status === 1 ? 'var(--gold)' : 'var(--muted)';
+    if (pr.prime_level != null) {
+      primeEl.textContent = `👑 Active (Level ${pr.prime_level})`;
+      primeEl.style.color = 'var(--gold)';
     } else {
-      primeEl.textContent = 'Prime Information Not Available';
+      primeEl.textContent = '❌ No Prime';
       primeEl.style.color = 'var(--muted)';
     }
   }
-
-  // External icon
-  buildGrid('iconGrid', [
-    ['Status', ei.status != null ? ei.status : '—'],
-    ['Show Type', ei.show_type != null ? ei.show_type : '—'],
-  ]);
 }
 
 // ---- Helper renderers ----
