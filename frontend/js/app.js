@@ -121,7 +121,7 @@ async function handleSearch() {
 
 // ---- Render Results ----
 function renderResults(data) {
-  resultsSection.hidden = false;
+  resultsSection.style.display = 'block';
 
   const b = data.basic_info || {};
   const p = data.profile_info || {};
@@ -254,11 +254,11 @@ function fmt(n) {
 // ---- Loading ----
 function showLoading(show) {
   if (show) {
-    loadingOverlay.hidden = false;
+    loadingOverlay.removeAttribute('hidden');
     loadingOverlay.style.display = 'flex';
   } else {
-    loadingOverlay.hidden = true;
-    loadingOverlay.style.display = '';
+    loadingOverlay.style.display = 'none';
+    loadingOverlay.setAttribute('hidden', '');
   }
 }
 
