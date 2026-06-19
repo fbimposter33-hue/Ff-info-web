@@ -82,7 +82,18 @@ async function handleSearch() {
   showLoading(true);
 
   try {
-    const res = await fetch(`${API_BASE}/${uid}`);
+    const coldTimer = setTimeout(() => {
+      const loaderText = document.querySelector('.loader-text');
+      if (loaderText) loaderText.textContent = 'Server waking up, please wait...';
+    }, 5000);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
+
+    const res = await fetch(`${API_BASE}/${uid}`, { signal: controller.signal });
+    clearTimeout(coldTimer);
+    clearTimeout(timeoutId);
+
     const json = await res.json();
 
     if (!res.ok || !json.success) {
@@ -96,9 +107,15 @@ async function handleSearch() {
     document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   } catch (e) {
-    showToast(e.message || 'Something went wrong.', 'error');
+    if (e.name === 'AbortError') {
+      showToast('Server timeout. Please try again.', 'error');
+    } else {
+      showToast(e.message || 'Something went wrong.', 'error');
+    }
   } finally {
     showLoading(false);
+    const loaderText = document.querySelector('.loader-text');
+    if (loaderText) loaderText.textContent = 'Fetching player data...';
   }
 }
 
