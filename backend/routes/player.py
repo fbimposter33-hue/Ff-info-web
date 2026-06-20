@@ -33,7 +33,16 @@ async def get_player(uid: str, request: Request):
             raise HTTPException(status_code=404, detail="Player not found.")
 
         await log_search(uid, success=True)
-        return {"success": True, "data": data}
+        return {
+            "success": True,
+            "data": data,
+            "developer": {
+                "name": "Shuvo Ahmed",
+                "telegram": "@shuvo_9882",
+                "app": "FF Info",
+                "version": "v1.0.0"
+            }
+        }
 
     except HTTPException:
         raise
