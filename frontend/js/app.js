@@ -101,6 +101,7 @@ async function handleSearch() {
     }
 
     renderResults(json.data);
+    renderDeveloper(json.developer);
     saveHistory(uid);
     fetchStats();
     showToast('Player found!', 'success');
@@ -230,6 +231,23 @@ function renderResults(data) {
       primeEl.textContent = '❌ No Prime';
       primeEl.style.color = 'var(--muted)';
     }
+  }
+}
+
+// ---- Developer Card ----
+function renderDeveloper(dev) {
+  if (!dev) return;
+  const card = document.getElementById('developerCard');
+  if (card) card.style.display = 'block';
+
+  setText('rDevName', dev.name || '—');
+  setText('rDevApp', dev.app || '—');
+  setText('rDevVersion', dev.version || '—');
+
+  const tgEl = document.getElementById('rDevTelegram');
+  if (tgEl && dev.telegram) {
+    tgEl.textContent = dev.telegram;
+    tgEl.href = `https://t.me/${dev.telegram.replace('@', '')}`;
   }
 }
 
