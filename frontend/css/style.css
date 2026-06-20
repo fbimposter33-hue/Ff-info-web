@@ -1001,3 +1001,46 @@ input { font-family: inherit; }
   .stats-grid { grid-template-columns: 1fr; }
   .info-grid  { grid-template-columns: 1fr; }
 }
+
+/* ============================================
+   DEVELOPER RESULT CARD
+   ============================================ */
+.dev-result-profile {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.dev-result-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  box-shadow: var(--glow-p);
+}
+.dev-result-name {
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.dev-result-tg {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--cyan);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.dev-result-tg:hover { color: var(--primary); }
+.dev-result-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
